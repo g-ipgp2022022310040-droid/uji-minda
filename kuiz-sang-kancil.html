@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Misi Fahami Kisah Sang Kancil</title>
+<style>
+:root{--daun:#2f7d4f;--daun2:#1f5a38;--langit:#d9f2e3;--tanah:#8a5a2b;--kuning:#ffd45c;--merah:#c8452f;--putih:#fffdf6;--teks:#25382c}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{font-family:"Trebuchet MS","Comic Sans MS",Verdana,sans-serif;color:var(--teks);font-size:20px;line-height:1.45;
+background:linear-gradient(#bfe8d0,#e9f7d8 60%,#b9dc9a);min-height:100vh}
+.app{max-width:760px;margin:0 auto;padding:14px 14px 40px}
+.bar{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-bottom:10px}
+.kad{background:var(--putih);border:4px solid var(--daun);border-radius:26px;padding:22px 20px;box-shadow:0 6px 0 var(--daun2)}
+h1{font-size:2rem;line-height:1.15;margin:.2em 0;color:var(--daun2);text-align:center}
+.watak{font-size:4.2rem;text-align:center;letter-spacing:.1em}
+.arahan{background:#fff3c4;border-radius:16px;padding:14px 16px;margin:14px 0}
+button{font:inherit;font-weight:bold;cursor:pointer;border:3px solid var(--daun2);border-radius:16px;padding:12px 20px;background:var(--putih);color:var(--daun2);min-height:52px}
+button:hover:not(:disabled){background:#e6f6d6}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible{outline:4px solid #2a6fd6;outline-offset:2px}
+.utama{background:var(--daun);color:#fff;border-color:var(--daun2)}
+.utama:hover:not(:disabled){background:var(--daun2)}
+.kuning{background:var(--kuning);border-color:#b58a00;color:#4a3800}
+.kecil{font-size:.8rem;min-height:44px;padding:8px 12px}
+.tengah{text-align:center}
+.prog{font-weight:bold;color:var(--daun2);margin-bottom:6px}
+.jalur{height:14px;background:#d6e8c8;border-radius:10px;overflow:hidden;margin-bottom:14px}
+.jalur i{display:block;height:100%;background:var(--daun);transition:width .3s}
+.gambar{font-size:3.4rem;text-align:center;background:var(--langit);border-radius:18px;padding:8px;margin-bottom:12px}
+.soalan{font-size:1.3rem;font-weight:bold;margin:0 0 14px}
+.pilihan{display:grid;gap:10px}
+.pil{display:flex;align-items:center;gap:12px;text-align:left;width:100%;background:#fff;border:3px solid #9bbf9f;font-weight:normal}
+.pil b{flex:none;width:38px;height:38px;border-radius:50%;background:var(--langit);display:grid;place-items:center;color:var(--daun2)}
+.pil.pilih{border-color:#2a6fd6;background:#e4efff;box-shadow:0 0 0 3px #2a6fd6 inset}
+.pil.pilih b{background:#2a6fd6;color:#fff}
+.pil.betul{border-color:var(--daun);background:#dff5d4;box-shadow:0 0 0 3px var(--daun) inset}
+.pil.betul b{background:var(--daun);color:#fff}
+.pil.salah{border-color:var(--merah);background:#fde6df}
+.maklum{min-height:3.2em;margin-top:14px;border-radius:16px;padding:10px 14px;font-weight:bold;display:none}
+.maklum.tunjuk{display:block}
+.maklum.ok{background:#dff5d4;color:#1d5a2a}
+.maklum.no{background:#fff0d6;color:#8a4a00}
+.maklum.info{background:#e4efff;color:#1f3f7a}
+.maklum small{display:block;font-weight:normal;font-size:.85em;margin-top:4px}
+.butang{display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;margin-top:16px}
+.markah{font-size:3.4rem;font-weight:bold;color:var(--daun2);text-align:center;margin:6px 0}
+.skrin{display:none}.skrin.aktif{display:block}
+@media(max-width:480px){body{font-size:18px}h1{font-size:1.6rem}.butang button{flex:1 1 45%}}
+@media(prefers-reduced-motion:reduce){.jalur i{transition:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="bar">
+    <button class="kecil" id="btnLagu" aria-pressed="true">Lagu: Hidup</button>
+    <button class="kecil" id="btnBunyi" aria-pressed="true">Bunyi Jawapan: Hidup</button>
+  </div>
+
+  <section class="kad skrin aktif" id="mula">
+    <div class="watak" aria-hidden="true">🦌🐰🦊</div>
+    <h1>Misi Fahami Kisah Sang Kancil</h1>
+    <div class="arahan">Baca soalan. Pilih satu jawapan. Kemudian, tekan ‘Semak Jawapan’. Tekan ‘Petunjuk’ jika kamu memerlukan bantuan.</div>
+    <p class="tengah"><button class="utama" id="btnMula">Mula Kuiz</button></p>
+  </section>
+
+  <section class="kad skrin" id="kuiz">
+    <div class="prog" id="prog"></div>
+    <div class="jalur"><i id="jalur"></i></div>
+    <div class="gambar" id="gambar" aria-hidden="true"></div>
+    <p class="soalan" id="soalan"></p>
+    <div class="pilihan" id="pilihan" role="radiogroup" aria-label="Pilihan jawapan"></div>
+    <div class="maklum" id="maklum" aria-live="polite"></div>
+    <div class="butang">
+      <button id="btnKembali">Kembali</button>
+      <button class="kuning" id="btnPetunjuk">Petunjuk</button>
+      <button class="utama" id="btnSemak">Semak Jawapan</button>
+      <button id="btnSeterusnya">Seterusnya</button>
+    </div>
+  </section>
+
+  <section class="kad skrin" id="akhir">
+    <div class="watak" aria-hidden="true">🌳🦌🐰🦊🌳</div>
+    <h1>Misi Selesai!</h1>
+    <div class="markah" id="markah"></div>
+    <p class="tengah" id="galakan"></p>
+    <p class="tengah"><button class="utama" id="btnCuba">Cuba Lagi</button></p>
+  </section>
+</div>
+
+<script>
+"use strict";
+var S=[
+{g:"🦌🐰 🌊🌳",q:"Di manakah Sang Kancil dan Sang Arnab mahu bersiar-siar?",o:["Di dalam gua","Di tepi sungai","Di atas bukit"],a:1,
+ h:"Mereka mahu pergi ke tempat yang ada air mengalir.",e:"Sang Kancil dan Sang Arnab mahu bersiar-siar di tepi sungai."},
+{g:"🧺🦊",q:"Siapakah yang mengambil bekal makanan mereka?",o:["Sang Kancil","Sang Arnab","Sang Musang"],a:2,
+ h:"Dia bukan Sang Kancil dan bukan Sang Arnab.",e:"Sang Musang mengambil bekal makanan mereka."},
+{g:"🦊🙏",q:"Apakah yang dilakukan oleh Sang Musang selepas mengambil bekal mereka?",o:["Meminta maaf","Menjual bekal itu","Membuang bekal itu"],a:0,
+ h:"Sang Musang berasa bersalah. Dia berkata sesuatu yang baik.",e:"Sang Musang meminta maaf kerana dia sudah berbuat salah."},
+{g:"🧺🍎🍌",q:"Apakah yang dilakukan oleh mereka selepas bekal ditemukan semula?",o:["Bermain di dalam gua","Makan bersama-sama","Mencari bekal yang lain"],a:1,
+ h:"Mereka sudah ada bekal semula. Mereka berkawan dan berkongsi.",e:"Mereka makan bersama-sama sebagai kawan."},
+{g:"🌬️🌳🚶",q:"Apakah maksud “makan angin” dalam cerita ini?",o:["Makan dengan cepat","Bersiar-siar","Berlari dengan laju"],a:1,
+ h:"Mereka pergi ke tepi sungai untuk berehat dan berjalan-jalan.",e:"“Makan angin” bermaksud bersiar-siar."},
+{g:"🦌🐰🔍🧺",q:"Mengapakah Sang Kancil dan Sang Arnab mencari bekal mereka?",o:["Bekal mereka hilang","Mereka mahu menjual bekal","Mereka mahu membuang bekal"],a:0,
+ h:"Fikirkan: apa yang berlaku kepada bekal itu selepas Sang Musang mengambilnya?",e:"Mereka mencari bekal kerana bekal mereka hilang."},
+{g:"🧒🍪🤝",q:"Jika kamu mahu mengambil makanan kawan, apakah yang patut kamu lakukan dahulu?",o:["Mengambilnya secara senyap","Menyembunyikannya di dalam beg","Meminta izin daripada kawan"],a:2,
+ h:"Fikirkan cara yang sopan dan jujur.",e:"Kita patut meminta izin daripada kawan dahulu."},
+{g:"🌟🦌🐰🦊",q:"Apakah pengajaran yang boleh kita amalkan daripada cerita ini?",o:["Bersikap jujur dan menghormati hak orang lain","Mengambil barang kawan tanpa izin","Membiarkan kawan menghadapi masalah sendirian"],a:0,
+ h:"Pilih sikap yang baik dan menghormati kawan.",e:"Kita perlu jujur dan menghormati hak orang lain."}
+];
+var N=S.length, L=["A","B","C"];
+var st, idx;
+function baru(){st=S.map(function(){return {sel:null,done:false,first:null,hint:false,fb:null}});idx=0}
+baru();
+
+var $=function(i){return document.getElementById(i)};
+function tunjuk(id){["mula","kuiz","akhir"].forEach(function(x){$(x).classList.toggle("aktif",x===id)});window.scrollTo(0,0)}
+
+/* ===== Audio (Web Audio API) ===== */
+var ctx=null,master=null,musicG=null,sfxG=null,laguOn=true,bunyiOn=true,timer=null,nextT=0,step=0,duckT=null;
+var BPM=96,E=60/BPM/2;
+var M=[392,440,523,440,392,330,392,0, 294,330,392,330,294,262,294,0, 330,392,440,392,330,294,330,0, 392,440,523,587,523,440,392,0];
+var B=[131,0,196,0,131,0,196,0, 110,0,165,0,110,0,165,0, 147,0,220,0,147,0,220,0, 131,0,196,0,196,0,131,0];
+function mulaAudio(){
+  if(!ctx){
+    var AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC)return;
+    ctx=new AC();
+    master=ctx.createGain();master.gain.value=1;master.connect(ctx.destination);
+    musicG=ctx.createGain();musicG.gain.value=laguOn?0.10:0;musicG.connect(master);
+    sfxG=ctx.createGain();sfxG.gain.value=0.5;sfxG.connect(master);
+  }
+  if(ctx.state==="suspended")ctx.resume();
+  if(!timer){nextT=ctx.currentTime+0.1;step=0;timer=setInterval(jadual,100)}
+}
+function nota(f,t,d,type,vol,dest){
+  var o=ctx.createOscillator(),g=ctx.createGain();
+  o.type=type;o.frequency.value=f;
+  g.gain.setValueAtTime(0.0001,t);
+  g.gain.exponentialRampToValueAtTime(vol,t+0.01);
+  g.gain.exponentialRampToValueAtTime(0.0001,t+d);
+  o.connect(g);g.connect(dest);o.start(t);o.stop(t+d+0.05);
+}
+function jadual(){
+  if(!ctx)return;
+  while(nextT<ctx.currentTime+0.3){
+    var i=step%M.length;
+    if(M[i])nota(M[i],nextT,E*1.8,"triangle",0.6,musicG);
+    if(B[i])nota(B[i],nextT,E*1.9,"sine",0.5,musicG);
+    nextT+=E;step++;
+  }
+}
+function setLagu(){
+  if(musicG)musicG.gain.setTargetAtTime(laguOn?0.10:0,ctx.currentTime,0.05);
+  $("btnLagu").textContent="Lagu: "+(laguOn?"Hidup":"Mati");
+  $("btnLagu").setAttribute("aria-pressed",laguOn);
+}
+function setBunyi(){
+  $("btnBunyi").textContent="Bunyi Jawapan: "+(bunyiOn?"Hidup":"Mati");
+  $("btnBunyi").setAttribute("aria-pressed",bunyiOn);
+}
+function rendah(ms){
+  if(!ctx||!laguOn)return;
+  var t=ctx.currentTime;
+  musicG.gain.cancelScheduledValues(t);
+  musicG.gain.setTargetAtTime(0.03,t,0.05);
+  clearTimeout(duckT);
+  duckT=setTimeout(function(){if(ctx)musicG.gain.setTargetAtTime(laguOn?0.10:0,ctx.currentTime,0.2)},ms);
+}
+function bunyiBetul(){
+  if(!ctx||!bunyiOn)return;rendah(900);
+  var t=ctx.currentTime+0.02;
+  nota(1319,t,0.5,"sine",0.7,sfxG);nota(1760,t+0.12,0.6,"sine",0.5,sfxG);
+}
+function bunyiSalah(){
+  if(!ctx||!bunyiOn)return;rendah(900);
+  var t=ctx.currentTime+0.02;
+  nota(392,t,0.3,"sine",0.5,sfxG);nota(294,t+0.25,0.45,"sine",0.5,sfxG);
+}
+
+/* ===== Paparan ===== */
+function papar(){
+  var s=S[idx],d=st[idx];
+  $("prog").textContent="Soalan "+(idx+1)+" daripada "+N;
+  $("jalur").style.width=((idx+1)/N*100)+"%";
+  $("gambar").textContent=s.g;
+  $("soalan").textContent=s.q;
+  var p=$("pilihan");p.innerHTML="";
+  s.o.forEach(function(t,i){
+    var b=document.createElement("button");
+    b.className="pil";b.setAttribute("role","radio");
+    var cls="";
+    if(d.done&&i===s.a)cls=" betul";
+    else if(d.sel===i&&d.fb==="no")cls=" salah";
+    else if(d.sel===i)cls=" pilih";
+    b.className+=cls;
+    b.setAttribute("aria-checked",d.sel===i);
+    b.disabled=d.done&&i!==s.a;
+    b.innerHTML="<b>"+L[i]+"</b><span></span>";
+    b.lastChild.textContent=t;
+    b.onclick=function(){if(d.done)return;d.sel=i;d.fb=null;papar()};
+    p.appendChild(b);
+  });
+  // maklum balas
+  var m=$("maklum");m.className="maklum";m.innerHTML="";
+  if(d.fb==="ok"){m.className="maklum tunjuk ok";m.textContent="Betul! Bagus!";addKecil(m,s.e)}
+  else if(d.fb==="no"){m.className="maklum tunjuk no";m.textContent="Belum tepat. Cuba lagi.";addKecil(m,s.h)}
+  else if(d.fb==="kosong"){m.className="maklum tunjuk no";m.textContent="Pilih satu jawapan dahulu."}
+  else if(d.fb==="hint"){m.className="maklum tunjuk info";m.textContent="Petunjuk: "+s.h}
+  $("btnKembali").disabled=idx===0;
+  $("btnSemak").disabled=d.done;
+  $("btnSeterusnya").disabled=!d.done;
+  $("btnSeterusnya").textContent=idx===N-1?"Lihat Markah":"Seterusnya";
+}
+function addKecil(m,t){var x=document.createElement("small");x.textContent=t;m.appendChild(x)}
+
+function semak(){
+  var d=st[idx],s=S[idx];
+  if(d.done)return;
+  if(d.sel===null){d.fb="kosong";papar();return}
+  var betul=d.sel===s.a;
+  if(d.first===null)d.first=betul;
+  if(betul){d.done=true;d.fb="ok";bunyiBetul()}
+  else{d.fb="no";bunyiSalah()}
+  papar();
+}
+function petunjuk(){var d=st[idx];if(d.done)return;d.fb="hint";papar()}
+function skor(){return st.reduce(function(a,d){return a+(d.first===true?1:0)},0)}
+function seterusnya(){
+  if(!st[idx].done)return;
+  if(idx<N-1){idx++;papar()}else{akhir()}
+}
+function akhir(){
+  var k=skor();
+  $("markah").textContent=k+" / "+N;
+  $("galakan").textContent=k>=6?"Hebat! Kamu sudah faham kisah Sang Kancil."
+    :k>=4?"Bagus! Kamu hampir berjaya. Baca cerita sekali lagi dan cuba lagi."
+    :"Tidak mengapa. Baca cerita sekali lagi, kemudian cuba lagi. Kamu pasti boleh!";
+  tunjuk("akhir");
+}
+
+$("btnMula").onclick=function(){mulaAudio();setLagu();baru();papar();tunjuk("kuiz")};
+$("btnSemak").onclick=semak;
+$("btnPetunjuk").onclick=petunjuk;
+$("btnKembali").onclick=function(){if(idx>0){idx--;papar()}};
+$("btnSeterusnya").onclick=seterusnya;
+$("btnCuba").onclick=function(){baru();papar();tunjuk("kuiz")};
+$("btnLagu").onclick=function(){laguOn=!laguOn;if(ctx&&ctx.state==="suspended")ctx.resume();setLagu()};
+$("btnBunyi").onclick=function(){bunyiOn=!bunyiOn;setBunyi()};
+setLagu();setBunyi();
+</script>
+</body>
+</html>
